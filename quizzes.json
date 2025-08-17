@@ -1,0 +1,29 @@
+{
+    "quizzes": [
+        {
+            "question": "what is your name beauty?",
+            "options": ["Joy", "Tuto", "none", "other"],
+            "answer": "Tuto"
+        },
+        {
+            "question": "which course are you undertaking love?",
+            "options": ["Tle", "Cpe", "Mpe", "Cse"],
+            "answer": "Tle"
+        },
+        {
+            "question": "would you mind if we date?",
+            "options": ["Not sure", "Yes", "No", "Maybe"],
+            "answer": "No"
+        },
+        {
+            "question": "Which language is this quiz written in?",
+            "options": ["Java", "C++", "Python", "JavaScript"],
+            "answer": "Python"
+        },
+        {
+            "question": "are you missing me?",
+            "options": ["perhaps", "yes", "Certainly", "Never"],
+            "answer": "Yes"
+        }
+    ]
+}
