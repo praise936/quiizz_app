@@ -32,17 +32,17 @@ def select_dep():
     Display department options and get user selection
     Returns the selected department abbreviation
     """
-    departments = ["CPE", "MPE", "CSC", "TLE"]
+    departments = ["CPE", "MPE", "CSC", "TLE","MIT","EC"]
     for i, dep in enumerate(departments, 1):
         print(f"{i}:{dep}")
-    dept_num = ["1", "2", "3", "4"]
+    dept_num = ["1", "2", "3", "4","5","6"]
 
     # Validate department selection
     while True:
-        dept = input("select 1,2,3 or 4: ")
+        dept = input("select department number: ")
         if dept in dept_num:
             break
-        print("invalid department entered kindly selct between 1-4: ")
+        print("invalid department entered kindly selct between 1-6: ")
 
     selected_dept = departments[dept_num.index(dept)]
     return selected_dept
