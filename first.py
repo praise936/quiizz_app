@@ -373,7 +373,7 @@ def delete_quiz():
         return "empty"
 
 
-def nextStep():
+def call_quiz():
     """
     Handle the process of selecting department and quiz
     Returns the selected quiz or None if no quizzes available
@@ -420,7 +420,7 @@ def sub_main():
                     result = json.load(file)
             except FileNotFoundError:
                 create_results_file()
-            quiz = nextStep()
+            quiz = call_quiz()
             if quiz == None:
                 print("wait for lecturer to add a quiz\n")
             else:
@@ -435,7 +435,7 @@ def sub_main():
             status = already_did(adm)
             if status == "error":
                 create_results_file()
-                quiz = nextStep()
+                quiz = call_quiz()
 
                 if quiz == None:
                     print("wait for lecturer to add a quiz\n")
@@ -447,7 +447,7 @@ def sub_main():
             elif status == "done":
                 print("\n⚠️ ⚠️  you already did the quiz\n")
             elif status == "good" or status == "first":
-                quiz = nextStep()
+                quiz = call_quiz()
                 if quiz == None:
                     print("wait for lecturer to add a quiz\n")
                 else:
