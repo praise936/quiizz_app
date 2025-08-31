@@ -215,12 +215,15 @@ def view_result():
     Display all quiz results from results.json file
     Shows name, score, and registration number for each student
     """
-    with open("results.json", "r") as file:
-        results = json.load(file)
-    for i, result in enumerate(results["details"], 1):
-        print(
-            f"name---->{result['name']}\nscore---->{result['score']}\nadmission---->{result['registration']}\n"
-        )
+    try:
+        with open("results.json", "r") as file:
+            results = json.load(file)
+        for i, result in enumerate(results["details"], 1):
+            print(
+                f"name---->{result['name']}\nscore---->{result['score']}\nadmission---->{result['registration']}\n"
+            )
+    except FileNotFoundError:
+        print("no student has taken any quiz")
 
 
 def already_did(adm):
