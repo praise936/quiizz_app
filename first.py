@@ -96,7 +96,7 @@ def select_quiz(quizzes):
 
 def run_quiz(quiz):
     """
-    Execute the quiz by displaying questions and collecting answers
+    run the quiz by displaying questions and collecting answers
     Returns score and total number of questions
     """
     score = 0
@@ -337,34 +337,35 @@ def delete_quiz():
     Allows lecturer to select and remove a specific quiz
     """
     jag = "red"
-    while True:
-        department = select_dep()  # Get department you have selected
-        filename = f"{department}.json"
-        try:
-            with open(filename, "r") as file:
-                results = json.load(file)
-            if not results["quizzes"]:
-                jag = "blue"
+   
+    department = select_dep()  # Get department you have selected
+    filename = f"{department}.json"
+    try:
+        with open(filename, "r") as file:
+            results = json.load(file)
+        if not results["quizzes"]:
+            jag = "blue"
+            return 'empty'
+            
+        # Display all available quizzes in the department
+        for i, quiz in enumerate(results["quizzes"], 1):
+            print(f"{i}: {quiz['title']}")
+
+        del_list = [i for i in range(1, len(results["quizzes"]) + 1)]
+
+        # Get user selection for which quiz to delete
+        while True:
+            to_delete = int(input("which quiz do you want to delete? : "))
+            if to_delete in del_list:
+                del results["quizzes"][to_delete - 1]  # Remove selected quiz
                 break
-            # Display all available quizzes in the department
-            for i, quiz in enumerate(results["quizzes"], 1):
-                print(f"{i}: {quiz['title']}")
 
-            del_list = [i for i in range(1, len(results["quizzes"]) + 1)]
-
-            # Get user selection for which quiz to delete
-            while True:
-                to_delete = int(input("which quiz do you want to delete? : "))
-                if to_delete in del_list:
-                    del results["quizzes"][to_delete - 1]  # Remove selected quiz
-                    break
-
-            # Rewrite the file without the deleted quiz
-            os.remove(filename)
-            with open(filename, "w") as file:
-                json.dump(results, file, indent=4)
-        except FileNotFoundError:
-            return "no such file exist"
+        # Rewrite the file without the deleted quiz
+        os.remove(filename)
+        with open(filename, "w") as file:
+            json.dump(results, file, indent=4)
+    except FileNotFoundError:
+        return "no such file exist"
     if jag == "blue":
         return "empty"
 
@@ -492,7 +493,7 @@ def sub_main():
         elif mode == "4" and position == "2":
             print("\nonly lecturers can delete a quiz\n")
         elif mode == "5":
-            # os.system("cls" if os.name == "nt" else "clear")
+            os.system("cls" if os.name == "nt" else "clear")
             print("thank you for using my app")
             
             break
