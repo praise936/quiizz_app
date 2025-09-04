@@ -20,11 +20,11 @@ def menu():
     print("4. delete some quiz")
     print("5. exit")
 
-    while True:
-        choice = input("\nEnter your choice (1-3): ")
+    while True:#keep asking you until you enter the correct input
+        choice = input("\nEnter your choice...: ")
         if choice in ["1", "2", "3", "4", "5"]:
             return choice
-        print("Invalid input. Please enter 1, 2, or 3.")
+        print("Invalid input. Please enter 1, 2, 3, 4 or 5.")
 
 
 def select_dep():
@@ -33,7 +33,7 @@ def select_dep():
     Returns the selected department abbreviation
     """
     departments = ["CPE", "MPE", "CSC", "TLE","MIT","EC"]
-    for i, dep in enumerate(departments, 1):
+    for i, dep in enumerate(departments, 1): #enumerates items in a list
         print(f"{i}:{dep}")
     dept_num = ["1", "2", "3", "4","5","6"]
 
@@ -44,9 +44,9 @@ def select_dep():
             break
         print("invalid department entered kindly selct between 1-6: ")
 
-    selected_dept = departments[dept_num.index(dept)]
+    selected_dept = departments[dept_num.index(dept)]#this finds the index of the input in dept_num
+                                                    #and retrieve the corresponding department with that index
     return selected_dept
-
 
 def load_quizzes(filename):
     """
@@ -55,11 +55,11 @@ def load_quizzes(filename):
     """
     try:
         with open(filename, "r") as file:
-            data = json.load(file)
+            data = json.load(file)#stores the data from filename to a variable called data
         return data
     except FileNotFoundError:
         return None
-    except json.JSONDecodeError:
+    except json.JSONDecodeError:#thiss is when the son format in filename is wrong
         print(f"Error: The file {filename} contains invalid JSON.")
         return {"quizzes": []}
 
@@ -114,7 +114,7 @@ def run_quiz(quiz):
         # Display options with letters (A, B, C, D)
         options = question["options"]
         letters = ["A", "B", "C", "D"]
-        for letter, option in zip(letters, options):
+        for letter, option in zip(letters, options):#zip(letters, options) returns a list that contain tuples ie [('A',dog),('B',cat),('C',male),]
             print(f"{letter}. {option}")
 
         # Get and validate user answer
@@ -126,7 +126,7 @@ def run_quiz(quiz):
 
         # Check if answer is correct
         correct_answer = question["answer"]
-        selected_option = options[letters.index(user_answer)]
+        selected_option = options[letters.index(user_answer)]#this takes the user anser goes to letters list finds the index of the answer the user has entered ie the anser must be in that list but now at which index so it gets that index and find the option at that index example if user enters A as their answer the function goes to letters list and find the ndex of A (0) then goes to options list and get the option at zero index
 
         if selected_option == correct_answer:
             print("Correct! 🎉")
@@ -186,7 +186,7 @@ def create_results_file():
     """
     results = {"details": []}
     with open("results.json", "w") as file:
-        json.dump(results, file, indent=4)
+        json.dump(results, file, indent=4)#this is a json function that takes the variable nammed result's content and keep them inside a newly created file
 
 
 def store_results(score, name, adm):
@@ -234,16 +234,18 @@ def already_did(adm):
     try:
         with open("results.json", "r") as file:
             results = json.load(file)
-        if results["details"]:
-            for i, detail in enumerate(results["details"], 1):
-                if detail["registration"] == adm:
-                    return "done"  # Student already took quiz
-                else:
-                    return "good"  # Student can take quiz
-        return "first"  # No results yet, first student
+        
+        if not results["details"]:
+            return "first"  # No results yet
+            
+        for detail in results["details"]:
+            if detail["registration"] == adm:
+                return "done"  # Student already took quiz
+                
+        return "good"  # Student can take quiz
+        
     except FileNotFoundError:
         return "error"  # Results file doesn't exist
-
 
 def create_quiz(selected_dept):
     """
@@ -339,38 +341,56 @@ def delete_quiz():
     Delete a quiz from a department's JSON file
     Allows lecturer to select and remove a specific quiz
     """
-    jag = "red"
-   
-    department = select_dep()  # Get department you have selected
+    department = select_dep()
     filename = f"{department}.json"
+    
     try:
         with open(filename, "r") as file:
-            results = json.load(file)
-        if not results["quizzes"]:
-            jag = "blue"
-            return 'empty'
+            questions = json.load(file)
             
-        # Display all available quizzes in the department
-        for i, quiz in enumerate(results["quizzes"], 1):
+        if not questions["quizzes"]:
+            return "empty"
+            
+        # Display quizzes
+        print(f"\nQuizzes in {department}:")
+        for i, quiz in enumerate(questions["quizzes"], 1):
             print(f"{i}: {quiz['title']}")
 
-        del_list = [i for i in range(1, len(results["quizzes"]) + 1)]
-
-        # Get user selection for which quiz to delete
+        # Get selection with validation
         while True:
-            to_delete = int(input("which quiz do you want to delete? : "))
-            if to_delete in del_list:
-                del results["quizzes"][to_delete - 1]  # Remove selected quiz
-                break
-
-        # Rewrite the file without the deleted quiz
-        os.remove(filename)
-        with open(filename, "w") as file:
-            json.dump(results, file, indent=4)
+            try:
+                to_delete = int(input("Which quiz do you want to delete? (0 to cancel): "))
+                if to_delete == 0:
+                    return "cancelled"
+                if 1 <= to_delete <= len(questions["quizzes"]):
+                    # Confirm deletion
+                    quiz_title = questions["quizzes"][to_delete-1]["title"]
+                    confirm = input(f"Delete '{quiz_title}'? (y/n): ").lower()
+                    if confirm == "y":
+                        del questions["quizzes"][to_delete-1]
+                        break
+                    else:
+                        return "cancelled"
+                print(f"Please enter 1-{len(questions['quizzes'])} or 0 to cancel")
+            except ValueError:
+                print("Please enter a valid number.")
+                
+        # Save updated data safely
+        temp_filename = f"{filename}.tmp"
+        with open(temp_filename, "w") as file:
+            json.dump(questions, file, indent=4)
+        
+        # Replace original file
+        if os.path.exists(filename):#operating system function that check if in the path their exist file with that name
+            os.remove(filename)#if their exist a file the file get deleted
+        os.rename(temp_filename, filename)#the temp file is renamed here
+            
+        
+        return "success"
+        
     except FileNotFoundError:
-        return "no such file exist"
-    if jag == "blue":
-        return "empty"
+        
+        return "no_file"
 
 
 def call_quiz():
@@ -385,7 +405,7 @@ def call_quiz():
     try:
         data = load_quizzes(filename)
         quiz = select_quiz(data["quizzes"])
-    except TypeError:
+    except TypeError:#that is if data becomes none then you can't say data['quizzes] it will be type error
         return None
     return quiz
 
@@ -465,7 +485,8 @@ def sub_main():
         # Student trying to create quiz (not allowed)
         elif mode == "2" and position == "2":
             print("  !!only lecturer can create quizes  \n\tchoose again\n")
-            sub_main()
+           
+            
 
         # View results
         elif mode == "3":
@@ -482,14 +503,16 @@ def sub_main():
                 j = "l"
             else:
                 os.system("cls" if os.name == "nt" else "clear")
-                sub_main()
+                
 
         # Lecturer deleting quiz
         elif mode == "4" and position == "1":  # Delete quiz
             deleted = delete_quiz()
-            if deleted == None:
+            if deleted == "success":
                 print("deleted successfully")
-            else:
+            elif deleted == "cancelled":
+                os.system("cls" if os.name == 'nt' else 'clear')
+            elif deleted == "no_file" or deleted == "empty":
                 print("the department has no questions")
 
         # Student trying to delete quiz (not allowed)
